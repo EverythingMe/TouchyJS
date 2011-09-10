@@ -325,7 +325,7 @@ var Doat_Navigation = function(){
         var paths = newHash.split('/'),
             page = "__empty";
         
-        if (paths.length > 0) {
+        if (paths.length > 0 && paths[0] != "") {
             page = paths[0];
         }
 
