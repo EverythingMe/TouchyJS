@@ -3721,7 +3721,7 @@ function Main(){
 
 // Instantiate object
 var Doat = new Main();
-if (!window.touchyjsConfig || !touchyjsConfig.manualInit){
+if (!window.doat_config || !doat_config.manualInit){
     Doat.init();
 }
 
