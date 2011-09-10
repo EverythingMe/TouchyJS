@@ -34,7 +34,7 @@ function Doat_Env(cfg){
 	var self = this,
 		_info,
         _do_platform,        
-        orientationPrefix = (typeof Doat !== "undefined") ? "doml-orientation-" : "orientation-",
+        orientationPrefix = "orientation-",
         orientationRegEpx = new RegExp(orientationPrefix+"[^\s]*","g"),        
         isTouch = cfg && cfg.isTouch || ('ontouchstart' in window);
     

@@ -35,23 +35,23 @@ function Doat_DOML(){
     templates = {
         'searchbar':{type: 'replace', html:
                         '<div><form '+
-                            'id="doml-searchbar-form" '+
-                            'onsubmit="{onsubmit}();Doat.Searchbar.onSubmit();return false;" '+
+                            'id="tml-searchbar-form" '+
+                            'onsubmit="{onsubmit}();TouchyJS.Searchbar.onSubmit();return false;" '+
                             '>'+
                                 '<input type="text" '+
                                 'value="{defaulttext}" '+
-                                'onfocus="Doat.Searchbar.clearValue(\'{defaulttext}\')" '+
-                                'onblur="Doat.Searchbar.fillValue(\'{defaulttext}\')" '+
-                                'id="doml-searchbar-searchfield" '+
+                                'onfocus="TouchyJS.Searchbar.clearValue(\'{defaulttext}\')" '+
+                                'onblur="TouchyJS.Searchbar.fillValue(\'{defaulttext}\')" '+
+                                'id="tml-searchbar-searchfield" '+
                                 'name="searchfield" '+
                                 'style="{style}" '+
                                 'clearbutton={clearbutton}' +
                                 '/>'+
                         '</form></div>'},
-        'navigate': {type: 'replace', html: '<a href="javascript://" class="{class}" onclick="Doat.Navigation.goTo(\'{to}\')"><span>{label}</span></a>'},
+        'navigate': {type: 'replace', html: '<a href="javascript://" class="{class}" onclick="TouchyJS.Nav.goTo(\'{to}\')"><span>{label}</span></a>'},
         'image': {type: 'image', html: '<img src="'+imageTemplate+'" alt="{alt}" />'}
     },
-    prefix = 'doml',
+    prefix = 'tml',
     keyDefaultValues = {
         'autoinit': 'false'
     };

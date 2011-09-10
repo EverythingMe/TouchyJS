@@ -117,7 +117,7 @@ function enableCssAnim(platform, browser, Log){
         else{
             Log && Log.info('not including cfg[\''+CSS_PREFIX+'transform\'] = \'translate3d(0px, 0px, 0px) rotate(0deg) scale(1)\'');
         }
-        $('.doml_content').css(cfg);
+        $('.touchyjs-content').css(cfg);
     }
 }
 

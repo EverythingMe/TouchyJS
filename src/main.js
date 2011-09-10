@@ -36,11 +36,11 @@
 function Main(){
 	var self = this,
         $document, head = document.getElementsByTagName('HEAD')[0],
-		DOML, Env, Navigation, Searchbar, Scroll, Slider, Swiper, envInfo,
+		DOML, Env, Nav, Searchbar, Scroll, Slider, Swiper, envInfo,
         cfg = {};
 
-    if (typeof doat_config !== 'undefined'){
-        cfg = aug(cfg, doat_config);
+    if (window.touchyjsConfig){
+        cfg = aug(cfg, touchyjsConfig);
     }
 
     this.init = init;
@@ -106,8 +106,8 @@ function Main(){
         Scroll = new Doat_Scroll();
         self.Scroll = Scroll;
 
-        Navigation = new Doat_Navigation();
-        self.Navigation = self.Nav = Navigation;
+        Nav = new Doat_Navigation();
+        self.Nav = Nav;
 
         // Event handlers
         self.Events.focused(function(){
@@ -131,12 +131,13 @@ function Main(){
 			DOML.parse();
 
             Scroll.init(cfg);
-            Navigation.init(cfg);
+            Nav.init(cfg);
 
-            addClass(document.body, 'doml-env-'+envInfo.platform.name);
+            addClass(document.body, envInfo.platform.name+" "+envInfo.browser.name);
+            addClass(document.body, Env.isTouch() ? 'touch' : 'no-touch');
 
             if (Env.isMobile()){
-                addClass(document.body, 'doml-env-mobile');
+                //addClass(document.body, 'mobile');
                 if (cfg.webkitAnimation !== false){
                     enableCssAnim(envInfo.platform.name, envInfo.browser.name, self.Log);
                 }
@@ -195,44 +196,6 @@ function Main(){
 		return self.params.query;
 	}
 
-	/**
-	 * @method renderHTML
-	 * @description Renders an HTML string according to template and data sent. Detrmines what to return according to the running platform.
-	 * Possible key names:
-	 * <ul>
-	 * <li>'default'</li>
-	 * <li>'web'</li>
-	 * <li>'iphone'</li>
-	 * <li>'ipad'</li>
-	 * <li>'android'</li>
-	 * <li>'windowsPhone'</li>
-	 * <li>'symbian'</li>
-	 * <li>'webOS'</li>
-	 * </ul>
-	 * Possible key combinations:
-	 * <ul>
-	 * <li>default</li>
-	 * <li>platformName (e.g 'iphone')</li>
-	 * <li>platformName[,platformName] (e.g 'iphone,android', 'web,default')<li>
-	 * </ul>
-	 * @param {String/Object} templates A string containing an HTML template or an object containing key-value pairs where the key is a platform name and the value is the html template associated.
-     * @param {Array} attrArr An associative array in which the keys are the replacement names in the template strings
-	 * @return {string}
-	 * @example
-	 * var html = Doat.renderHTML('Hi! my name is {name}.', {'name': 'Joey'});
-	 * // Returns 'Hi! My name is Joey.'
-	 *
-	 *
-	 * var html = Doat.renderHTML({'iphone': 'This is an iphone version {ver}.'}, {'ver': '4.2'});
-	 * // Returns 'This is an iphone version 4.2.' (if platform === 'iphone')
-	 * // Returns '' (if platform === 'web')
-	 *
-	 *
-	 * var html = Doat.renderHTML({'web': '<p class="web">{text}</p>', 'iphone,default': '<span class="mobile">{text}</span>'}, {'text': 'Just some text'});
-	 * // Returns '<p class="web">Just some text</p>' (if platform === 'web')
-	 * // Returns '<span class="mobile">Just some text</span>' (if platform === 'iphone')
-	 * // Returns '<span class="mobile">Just some text</span>' (if platform === 'android')
-	 */
 	 function renderHTML(templates, attrArr){
 		var tmpl;
 		// If a string was sent instead of an object
@@ -499,9 +462,9 @@ function Main(){
 }
 
 // Instantiate object
-var Doat = new Main();
-if (!window.doat_config || !doat_config.manualInit){
-    Doat.init();
+var mainObj = new Main();
+if (!window.touchyjsConfig || !touchyjsConfig.manualInit){
+    mainObj.init();
 }
 
 	

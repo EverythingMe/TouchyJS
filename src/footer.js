@@ -26,5 +26,5 @@
  * or implied, of DoAT.
  */
 
-    window['Doat'] = Doat;
+    window['TouchyJS'] = mainObj;
 })();

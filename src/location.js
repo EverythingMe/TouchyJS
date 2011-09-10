@@ -29,14 +29,14 @@
 (function(){
     var callback, lastPosition,
         generatedCallback = 'doat_onLocationRetrieved_'+new Date().getTime(),
-        Log = (typeof Doat != 'undefined' && Doat && Doat.Log) || new Logger();
+        Log = window.TouchyJS && TouchyJS.Log;
 
     Doat_Env.prototype.getLocation = function(_callback, cfg){
         callback = _callback;
 
         if (!cfg || !cfg.testProps){
             if (cfg && cfg.request){
-                Log.info('Specific params requested for location', cfg.request);
+                Log && Log.info('Specific params requested for location', cfg.request);
                 var qs = parseQuery(), data = {}, flag = true,
                     arr = (cfg.request.constructor === String) ? [cfg.request] : cfg.request;
 
@@ -44,11 +44,11 @@
                     var key = 'do_loc_'+arr[i];
                     if (qs[key]){
                         data[arr[i]] = decodeURIComponent(qs[key]);
-                        Log.info('found '+key);
+                        Log && Log.info('found '+key);
                     }
                     else{
                         flag = false;
-                        Log.info('could not find '+arr[i]+' in querystring');
+                        Log && Log.info('could not find '+arr[i]+' in querystring');
                         break;
                     }
                 }

@@ -72,15 +72,7 @@ var Doat_Events = function(){
     };
 
     var call = function(cb){
-        //try{
-            cb();
-        //}
-        /*catch(e){
-            var log = Log || Doat.Log || (Logger) ? new Logger : null;
-            if (log){
-                log.error(e);
-            }
-        }*/
+        cb();
     };
 
     // shortcuts

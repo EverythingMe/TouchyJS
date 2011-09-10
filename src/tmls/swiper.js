@@ -89,10 +89,10 @@ function Doat_Swiper() {
         if (options.autoplay) {
             _this.autoplayStart();
             if (options.stopAutoplayOnFocus) {
-                Doat.Events.focused(function(){
+                mainObj.Events.focused(function(){
                     _this.autoplayStop();
                 });
-                Doat.Events.blurred(function(){
+                mainObj.Events.blurred(function(){
                     _this.autoplayStart();
                 });
             }
@@ -101,7 +101,7 @@ function Doat_Swiper() {
 
     function addNavigationEvents() {
         var element = $itemsEl.parent().get(0);
-        Doat.Env.addEventListener(element, 'touch', function(e, data){
+        mainObj.Env.addEventListener(element, 'touch', function(e, data){
             switch (data.type){
                 case "start":
                     disableAnimation($itemsEl);
@@ -129,7 +129,7 @@ function Doat_Swiper() {
 
         if ($navEl && thumbsSwipe) {
             element = $navEl.parent().get(0);
-            Doat.Env.addEventListener(element, 'touch', function(e, data){
+            mainObj.Env.addEventListener(element, 'touch', function(e, data){
                 switch (data.type){
                     case "start":
                         disableAnimation($navEl);

@@ -31,9 +31,8 @@
 * @class
 */
 var Doat_Navigation = function(){
-    var MainObj = typeof Doat != 'undefined' ? Doat : TouchyJS,
-        classnamePrefix = typeof Doat != 'undefined' ? 'doml_' : 'touchyjs-',
-        isMobile = MainObj.Env.isMobile(),
+    var classnamePrefix = 'touchyjs-',
+        isMobile = mainObj.Env.isMobile(),
         $currentElement,
         $previousElement,
         currentElementHeight,
@@ -45,7 +44,7 @@ var Doat_Navigation = function(){
         isNavigating = false,
         firstPageId;
 
-    var b = MainObj.Env.getInfo().browser.name || MainObj.Env.getInfo().browser;
+    var b = mainObj.Env.getInfo().browser.name || mainObj.Env.getInfo().browser;
     CSS_PREFIX = b === 'webkit' ? '-webkit-' : b === 'mozilla' ? '-moz-' : '';
 
     var init = function(_cfg){
@@ -167,7 +166,7 @@ var Doat_Navigation = function(){
             if (options && options.id && options.id.replace){
                 props.id = options.id.replace('/', '-');
             }
-            if (MainObj.Messenger) {MainObj.Messenger.trigger(MainObj.Events.USER_ACTION, props)};
+            if (mainObj.Messenger) {mainObj.Messenger.trigger(mainObj.Events.USER_ACTION, props)};
         }
 
         return true;
