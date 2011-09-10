@@ -65,7 +65,8 @@ function Doat_Env(cfg){
         	m[2] && '' ||
         	m[3] && 'nokia'||
         	m[4] && 'blackberry' ||
-        	m[5] && '';  
+        	m[5] && '' ||
+        	'desktop';  
         
         return {
         	"name": n,
