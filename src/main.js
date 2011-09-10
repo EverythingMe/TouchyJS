@@ -7,12 +7,11 @@
  * @author ran@doat.com (Ran Ben Aharon)
  * @version: 0.671
  */
-function Doat_Main(){
+function Main(){
 	var self = this,
         $document, head = document.getElementsByTagName('HEAD')[0],
-		Messenger, DOML, Env, Navigation, Searchbar, Scroll, Slider, Swiper, envInfo,
-        cfg = {},
-        ENABLE_ANALYTICS = (typeof doat_jsa !== 'undefined' && doat_jsa);
+		DOML, Env, Navigation, Searchbar, Scroll, Slider, Swiper, envInfo,
+        cfg = {};
 
     if (typeof doat_config !== 'undefined'){
         cfg = aug(cfg, doat_config);
@@ -24,7 +23,7 @@ function Doat_Main(){
     this.getSearchQuery = getSearchQuery;
     this.visible = this.focused = false;
 
-    this.Log = new Logger();
+    this.Log = typeof Logger !== "undefined" && new Logger() || null;
 
     // Put here so that apps could attach to Events.ready() before init() executes (if jquery isn't preloaded).
     this.Events = new Doat_Events();
@@ -66,36 +65,6 @@ function Doat_Main(){
 		// DOML
 		DOML = new Doat_DOML();
 		self.DOML = DOML;
-
-		// Messenger
-		Messenger = new Doat_Messenger();
-		Messenger.setAuthFunc(function(message){
-			// make sure it's from the top.window (dashboard)
-			if (message.source === top.window){
-				return {
-					'error': 'OK',
-					'attachData':{
-						'source': message.source
-					}
-				};
-			}
-			else{
-				return {
-					'error': 'Not authenticated',
-					'attachData':{
-						'origin': message.origin
-					}
-				};
-			}
-		});
-		self.Messenger = Messenger;
-        if (ENABLE_ANALYTICS){
-            this.Log.info('Analytics enabled');
-            enableMobileAnalytics(Messenger, Env.isMobile());
-        }
-        else{
-            this.Log.info('Analytics disabled');
-        }
         
         Searchbar = new Doat_Searchbar({
             'searchClearButton': cfg.searchClearButton
@@ -111,18 +80,10 @@ function Doat_Main(){
         Scroll = new Doat_Scroll();
         self.Scroll = Scroll;
 
-        Navigation = new Doat_Navigation(cfg);
+        Navigation = new Doat_Navigation();
         self.Navigation = self.Nav = Navigation;
 
         // Event handlers
-		$(window).bind('load', function(){
-			Messenger.trigger(Doat.Events.WINDOW_LOADED);		
-		});
-
-		self.Events.ready(function(){
-			Messenger.trigger(Doat.Events.DOAT_READY);
-		});
-
         self.Events.focused(function(){
         	cfg.hasHost = true;
 			self.focused = true;
@@ -140,16 +101,10 @@ function Doat_Main(){
 			self.visible = false;
 		});
 
-        Messenger.bind('focusState', function(meta, data){
-            self.Events.dispatchEvent(data.type);
-        });
-
 		$document.ready(function(){
-			Messenger.trigger(Doat.Events.DOCUMENT_READY);
-
 			DOML.parse();
 
-            Navigation.init();
+            Navigation.init(cfg);
 			Scroll.init(cfg);
 
             addClass(document.body, 'doml-env-'+envInfo.platform.name);
@@ -193,11 +148,6 @@ function Doat_Main(){
                         elPath+= ' (\"'+alt+'\")';
                     }
                 }
-
-				Messenger.trigger(Doat.Events.USER_ACTION,{
-                    'action': 'Click',
-                    'element': elPath
-                });
 			});
 			self.Events.dispatchEvent('ready', {'callOnce': true});
 		});
@@ -208,11 +158,6 @@ function Doat_Main(){
 		self.params.experience = q['do_experience'] ? decodeURIComponent(q['do_experience']) : '';
 		self.params.platform = q['do_platform'] ? q['do_platform'] : '';
         self.params.attributes = q['do_attr'] ? JSON.parse(decodeURIComponent(q['do_attr'])) : {};
-
-        Messenger.trigger(Doat.Events.PAGE_VIEW, {
-            'action': 'PageView',
-            'query': self.params.query
-        });
 	}
 
     /**
@@ -525,12 +470,13 @@ function Doat_Main(){
 	        a.style.top = document.body.scrollTop + 40 + 'px';
         }
     }
-}//Doat Main
+}
 
 // Instantiate object
-var Doat = new Doat_Main();
-if (!(typeof doat_config !== 'undefined' && doat_config.manualInit == true)){
-	Doat.init();
+var Doat = new Main();
+if (!window.touchyjsConfig || !touchyjsConfig.manualInit){
+    Doat.init();
 }
+
 	
 

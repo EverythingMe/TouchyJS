@@ -2,14 +2,14 @@
 * Providing the ability to navigate between content "pages" using a smoothe motion animation
 * @class
 */
-var Doat_Navigation = function(_cfg){
+var Doat_Navigation = function(){
     var MainObj = typeof Doat != 'undefined' ? Doat : TouchyJS,
         classnamePrefix = typeof Doat != 'undefined' ? 'doml_' : 'touchyjs-',
         isMobile = MainObj.Env.isMobile(),
         $currentElement,
         $previousElement,
         currentElementHeight,
-        cfg = _cfg || {},
+        cfg = {},
         cbArr = {},
         addressCbArr = {},
         CSS_PREFIX,
@@ -20,10 +20,12 @@ var Doat_Navigation = function(_cfg){
     var b = MainObj.Env.getInfo().browser.name || MainObj.Env.getInfo().browser;
     CSS_PREFIX = b === 'webkit' ? '-webkit-' : b === 'mozilla' ? '-moz-' : '';
 
-    var init = function(){
-        if (cfg.includeChange) {
+    var init = function(_cfg){
+        _cfg && (cfg = aug(cfg, _cfg));
+        
+        if (cfg.browserHistory) {
             initAddress();
-        } 
+        }
     };
     
     /**
@@ -144,7 +146,7 @@ var Doat_Navigation = function(_cfg){
     };
 
     var back = function(){
-        if (cfg.includeChange){
+        if (cfg.browserHistory){
             history.back();
         }
         else{
@@ -153,7 +155,7 @@ var Doat_Navigation = function(_cfg){
     };
 
     var goTo = function(toPage, options, bNoCallback){
-        if (cfg.includeChange) {
+        if (cfg.browserHistory) {
             var $nextElement = (toPage.constructor === String) ? $('.'+classnamePrefix+'content#'+toPage) : $(toPage);
             
             var urlValue = "";
@@ -166,8 +168,9 @@ var Doat_Navigation = function(_cfg){
             }
             $.address.value($nextElement[0].id + urlValue);
         }
-        
-        //navigate.apply(this, arguments)
+        else{
+            navigate.apply(this, arguments);
+        }
     };
 
     var onStart = function($nextElement, options){
@@ -290,7 +293,6 @@ var Doat_Navigation = function(_cfg){
     };
 
     var addressChanged = function(event) {  
-    
         var paths = event.pathNames,
             page = "__empty";
         
@@ -305,6 +307,7 @@ var Doat_Navigation = function(_cfg){
         
         var cbs = addressCbArr[page].concat(addressCbArr["__default"]);
         if (page == "__empty") page = firstPageId;
+        
         
         if (ADDRESS_FIRST) {
             navigate(page, {
@@ -322,8 +325,6 @@ var Doat_Navigation = function(_cfg){
     };
 
     var initAddress = function() {
-        //cfg.includeChange = true;
-        includeChanged();
         $.address.change(addressChanged);
     }   
 
