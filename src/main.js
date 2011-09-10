@@ -104,8 +104,8 @@ function Main(){
 		$document.ready(function(){
 			DOML.parse();
 
+            Scroll.init(cfg);
             Navigation.init(cfg);
-			Scroll.init(cfg);
 
             addClass(document.body, 'doml-env-'+envInfo.platform.name);
 

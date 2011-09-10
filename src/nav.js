@@ -166,7 +166,8 @@ var Doat_Navigation = function(){
                     urlValue = "/" + options.id;
                 }
             }
-            $.address.value($nextElement[0].id + urlValue);
+            //$.address.value($nextElement[0].id + urlValue);
+            hasher.setHash($nextElement[0].id + urlValue);
         }
         else{
             navigate.apply(this, arguments);
@@ -292,8 +293,8 @@ var Doat_Navigation = function(){
         }
     };
 
-    var addressChanged = function(event) {  
-        var paths = event.pathNames,
+    var addressChanged = function(newHash) {  
+        var paths = newHash.split('/'),
             page = "__empty";
         
         if (paths.length > 0) {
@@ -324,8 +325,10 @@ var Doat_Navigation = function(){
         }
     };
 
-    var initAddress = function() {
-        $.address.change(addressChanged);
+    var initAddress = function() {        
+        hasher.changed.add(addressChanged);
+        hasher.initialized.add(addressChanged);
+        hasher.init();
     }   
 
     return {
