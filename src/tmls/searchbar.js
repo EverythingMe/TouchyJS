@@ -135,11 +135,6 @@ var Doat_Searchbar = function(cfg){
     }
 
     function onSubmit(){
-        Doat.Messenger.trigger(Doat.Events.USER_ACTION,{
-                'action': 'Search',
-                'newQuery': getValue()
-            }
-        );
         blur();
     }
 };
