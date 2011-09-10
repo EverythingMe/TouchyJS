@@ -692,11 +692,6 @@ var Doat_Searchbar = function(cfg){
     }
 
     function onSubmit(){
-        Doat.Messenger.trigger(Doat.Events.USER_ACTION,{
-                'action': 'Search',
-                'newQuery': getValue()
-            }
-        );
         blur();
     }
 };
@@ -3246,7 +3241,7 @@ var Doat_Navigation = function(){
     var changed = function(_page, _cb) {
         if (typeof _page == "function") {
             _cb = _page;
-            _page = "__default";
+            _page = ["__default"];
         } else if (typeof _page == "string") {
             if (_page == "") {
                 _page = "__empty";
@@ -3265,7 +3260,7 @@ var Doat_Navigation = function(){
         var paths = newHash.split('/'),
             page = "__empty";
         
-        if (paths.length > 0) {
+        if (paths.length > 0 && paths[0] != "") {
             page = paths[0];
         }
 
@@ -3275,8 +3270,7 @@ var Doat_Navigation = function(){
         if (!addressCbArr["__default"]) addressCbArr["__default"] = [];
         
         var cbs = addressCbArr[page].concat(addressCbArr["__default"]);
-        if (page == "__empty") page = firstPageId;
-        
+        if (page == "__empty") page = firstPageId;        
         
         if (ADDRESS_FIRST) {
             navigate(page, {
