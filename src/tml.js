@@ -34,7 +34,7 @@ function Doat_DOML(){
     var imageTemplate = 'http://doatresizer.appspot.com/?url={src}&width={width}&height={height}&cache=short&crop={crop}', 
     templates = {
         'searchbar':{type: 'replace', html:
-                        '<form '+
+                        '<div><form '+
                             'id="doml-searchbar-form" '+
                             'onsubmit="{onsubmit}();Doat.Searchbar.onSubmit();return false;" '+
                             '>'+
@@ -47,10 +47,7 @@ function Doat_DOML(){
                                 'style="{style}" '+
                                 'clearbutton={clearbutton}' +
                                 '/>'+
-                        '</form>'+
-                        '<script>'+
-                            'if ({autoinit}) Doat.Searchbar.autoinit({onsubmit});'+
-                        '<'+'/script>'},
+                        '</form></div>'},
         'navigate': {type: 'replace', html: '<a href="javascript://" class="{class}" onclick="Doat.Navigation.goTo(\'{to}\')"><span>{label}</span></a>'},
         'image': {type: 'image', html: '<img src="'+imageTemplate+'" alt="{alt}" />'}
     },
