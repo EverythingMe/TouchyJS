@@ -59,7 +59,7 @@
 * @description Enables attachment of callback functions to Doat events
 * @class
 */
-var Doat_Events = function(){
+var Doat_Events = function(){ 
     var self = this,
         eventArr = {};
     
