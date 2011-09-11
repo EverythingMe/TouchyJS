@@ -1,3 +1,5 @@
 .settings
 src/boiler/
 .project
+dist/touchy.js.php
+
