@@ -42,7 +42,8 @@ var Doat_Navigation = function(){
         CSS_PREFIX,
         ADDRESS_FIRST = true,
         isNavigating = false,
-        firstPageId;
+        firstPageId,
+        globalOptions;
 
     var b = mainObj.Env.getInfo().browser.name || mainObj.Env.getInfo().browser;
     CSS_PREFIX = b === 'webkit' ? '-webkit-' : b === 'mozilla' ? '-moz-' : '';
@@ -118,19 +119,34 @@ var Doat_Navigation = function(){
 
             onComplete($nextElement, options);
         }
-        else if (options && options['transition'] == 'fade'){
-        	$nextElement.css(CSS_PREFIX+'transition', 'opacity 0.5s linear');
-                $nextElement.css({
-                    'display': 'block',
-                    'opacity': 1
-                });
+        else if (options && options['transition'] == 'fade'){            
+            
+            $currentElement.
+               css('z-index', 2);
+            
+            if (isMobile){
+                $nextElement.css(CSS_PREFIX+'transition-duration', '0');
+                $nextElement.css(CSS_PREFIX+'transform', 'translateX(0)');
+            }
+            else{
+                $nextElement.css('left', 0);
+            }
+            $nextElement.css('display', 'block');
 
-        	$currentElement.css(CSS_PREFIX+'transition', 'opacity 0.5s linear');
-                $currentElement.css({
-                    'opacity': 0
-                });
+            $currentElement.
+               css(CSS_PREFIX+'transition', 'opacity 0.5s linear').
+               css('opacity', 0);
 
-                onComplete($nextElement, options);
+            setTimeout(function(){
+                $currentElement.
+                    css('display', 'none').
+                    css(CSS_PREFIX+'transition-duration', '0').
+                    css({
+                        'z-index': 1,
+                        'opacity': 1
+                    });
+                 onComplete($nextElement, options);
+            }, 200);
         }
         else{
             var direction = options && options.direction || determineDirection($nextElement),
@@ -193,7 +209,7 @@ var Doat_Navigation = function(){
                     urlValue = "/" + options.id;
                 }
             }
-            //$.address.value($nextElement[0].id + urlValue);
+            globalOptions = options;
             hasher.setHash($nextElement[0].id + urlValue);
         }
         else{
@@ -343,7 +359,7 @@ var Doat_Navigation = function(){
             ADDRESS_FIRST = false;
         }
         else{
-            navigate(page, {}, true);
+            navigate(page, globalOptions, true);
         }
 
         for (var i=0; i<cbs.length; i++) {
