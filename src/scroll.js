@@ -86,7 +86,7 @@ function Doat_Scroll(){
                
                 var id = el.getAttribute('id');
                 if (iscrollArr[id]){
-                    iscrollArr[id].refresh.call();
+                    iscrollArr[id].refresh.call(iscrollArr[id]);
                 }
                 else if(!(cfg.disableIScroll && cfg.disableIScroll[id])){
                     $el.css({
