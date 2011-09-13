@@ -403,7 +403,7 @@ function Doat_Progress_Indicator(){
         default_css = {
             'position': 'absolute',
             'left': '50%',
-            'top': '150px',
+            'top': '50%',
             'z-index': 200
         };
         
