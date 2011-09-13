@@ -132,9 +132,15 @@ function Main(){
 
             Scroll.init(cfg);
             Nav.init(cfg);
-
-            addClass(document.body, envInfo.platform.name+" "+envInfo.browser.name);
-            addClass(document.body, Env.isTouch() ? 'touch' : 'no-touch');
+            
+            var cssHooks = ''+
+                (envInfo.os.name ? envInfo.os.name+' ' : '')+
+                (envInfo.platform.name ? envInfo.platform.name+' ' : '')+
+                (envInfo.browser.name ? envInfo.browser.name+' ' : '')+
+                (Env.isTouch() ? 'touch' : 'not-touch')+' '+
+                (Env.isMobile() ? 'mobile' : 'not-mobile');                
+            
+            addClass(document.body, cssHooks);
 
             if (Env.isMobile()){
                 //addClass(document.body, 'mobile');
