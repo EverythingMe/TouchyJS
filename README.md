@@ -1,2 +1,2 @@
-TouchyJS
+Touchy™JS
 __________
