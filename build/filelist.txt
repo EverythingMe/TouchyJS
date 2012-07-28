@@ -13,7 +13,6 @@ header.js
 ../src/tmls/searchbar.js
 ../src/tmls/slider.js 
 ../src/tmls/swiper.js 
-../src/plugins/iscroll.js
 ../src/scroll.js
 ../src/plugins/animate.js 
 ../src/plugins/facebook.js           
