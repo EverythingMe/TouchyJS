@@ -28,8 +28,23 @@
 
 function enableCssAnim(platform, browser, Log){
     Log && Log.info('platform='+platform);
-    var transfromKeys = ['scale', 'rotate', 'skew', 'translate', 'matrix'],    
-    CSS_PREFIX = browser === 'webkit' ? '-webkit-' : browser === 'mozilla' ? '-moz-' : '';
+    
+    var supported = document.body.style.animationName,
+        prefixes = ["Webkit","Moz","O","ms","Khtml"];
+    
+    if( !supported ) {
+        for( var i = 0; i < prefixes.length; i++ ) {
+            if( document.body.style[ prefixes[i] + 'AnimationName' ] !== undefined ) {
+                CSS_PREFIX = '-' + prefixes[ i ].toLowerCase() + '-';
+                supported = true;
+                break;
+            }
+        }
+    }
+    
+    if (!supported) { return false; }
+    
+    var transfromKeys = ['scale', 'rotate', 'skew', 'translate', 'matrix'];
 
     css();
 
@@ -145,7 +160,7 @@ function enableCssAnim(platform, browser, Log){
         else{
             Log && Log.info('not including cfg[\''+CSS_PREFIX+'transform\'] = \'translate3d(0px, 0px, 0px) rotate(0deg) scale(1)\'');
         }
-        $('.touchyjs-content').css(cfg);
+        $('.doml_content').css(cfg);
     }
 }
 

@@ -25,7 +25,6 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of DoAT.
  */
-
 /**
 * @class Scroll
 * @description Provides the fixed positioning for header with scrolling content.
@@ -43,10 +42,10 @@ function Doat_Scroll(){
         $header,
         head = document.getElementsByTagName('head')[0],
         //iScrollConfig = {onBeforeScrollStart: null, vScrollbar: true, hScroll: false},      
-        iScrollConfig = {vScrollbar: true, hScroll: false},        
+        iScrollConfig = {vScrollbar: true, hScroll: false, useTransform: false},        
         cfg;
         
-    window.addEventListener('orientationchange', calculate, false);
+    //window.addEventListener('orientationchange', calculate, false);
 
     var isElementExists = function(){
         var _elements = $('.'+contentClassName);
@@ -104,18 +103,120 @@ function Doat_Scroll(){
                         innerEl.className = classnamePrefix+'created';
                         innerEl.style.width = '100%';
                         for (var i=0, len=el.children.length; i<len; i++){
-                            //alert(el.children[i]);
+                            alert(el.children[i]);
                             innerEl.appendChild(el.children[i]);
                         }
                         el.appendChild(innerEl);
                     }
                     else{
-                        $innerEl[0].style.width = '100%';
+                        $innerEl[0].style.width = '100%';                        
                     }
-                                  
+                    
+                    if (cfg.pullToRefresh === id) {                                              
+                        
+                        var pullDownContainer = 'touchy-pulldown',
+                            pullDownIconClass = 'touchy-pulldown-icon',
+                            pullDownFlipClass = 'touchy-pulldown-flip',
+                            pullDownLoadingClass = 'touchy-pulldown-loading',
+                            pullDownLabelClass = 'touchy-pulldown-label',
+                            pullDownLabelText = {'pull':'Pull down to refresh...',
+                                                 'release':'Release to refresh...',
+                                                 'loading':'Loading...'};                            
+                        
+                        var css = '#'+pullDownContainer+' {'+                        
+                                  '     background:#000000;'+
+                                  '     height:40px;'+
+                                  '     line-height:40px;'+
+                                  '     padding:5px 10px;'+                                  
+                                  '     font-weight:bold;'+
+                                  '     font-size:14px;'+
+                                  '     color:#888888;'+
+                                  '     visibility:hidden'+
+                                  '}'+                        
+                                  '#'+pullDownContainer+' .'+pullDownIconClass+' {'+
+                                  '     display:block; float:left;'+
+                                  '     width:40px; height:40px;'+                                                        
+                                  '     background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAACgCAMAAACsXRuGAAAAt1BMVEX////FxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcXFxcU7SVrkAAAAPHRSTlMAAPONxyCMRvCjM2n59gzeD/xssVo52Akwh6sDpeTbckJLZroqfhUnRernVxifG9XDgb2ZzzxjeLThEmBcLCjmAAACDklEQVR4Xu2Y124yQQyFM9sh9BJafgik956/7fs/V4RCwiITbMdjCSGfKy4On7THnuLZ8yGTyRWUr1W54NgNIC4Dbm+VrQ+tbQxoQAMa0IAGnO4vtR44WBquCcBuJadrSslwQucNaBm2qbyHEQ3YqNN4l3fUKpdpMV7Q26ZF4T3S+5AU49OIA8RjvLpxDCAeY/PIcYB4jKf8tTzcxDt2fGBt/D3v19kPgK5fRQLkAt0MCZANdIdIgGxg7WBjgHygO1kTY/NVMla8QeBvJwHCGP84CRDG+PefBAhjrHTlo9n/InDiY9a7XfLazgewd//Jqze8AN15sAiw7Gu87XwAW/7m5ec5b+j8AXsveT6uSYAwxmrf7xNBZ+aYQJPJZDLh+20aRlkWhen8twdgnCyO0SCJfQDjUv6lUuwBmOQFJXJgGhSBQSoGhvmKQnFNo1VgBD3MmmarwAx6WDWFQOhh1RR+MvSwagqLwqw7/ndW3UkfCD2bhJcAephAvJGYn4y3OrMouIfZNriH19i4h7v0cI9ww4ce4ZEEPTt6/uJ+UdS4H28G1C9qV9yPLyjUL1vyuB/dlLh+dNtE/dpA+SdrF0XeNsqNLV96+puDfPvaaukfUvJjVP+gl19F9C9L8uuc/oVTfiXWv7TLxwr9wUc+msmHR/3xVj6A6z8RSBej/jMLp+76T1X6j2m7eP6aTO9STHV4CXebKAAAAABJRU5ErkJggg%3D%3D); 0 0 no-repeat;'+
+                                  '     -webkit-background-size:40px 80px; background-size:40px 80px;'+
+                                  '     -webkit-transition-property:-webkit-transform;'+
+                                  '     -webkit-transition-duration:250ms;'+
+                                  '     -webkit-transform:rotate(0deg) translateZ(0);'+  
+                                  '}'+                                
+                                  '#'+pullDownContainer+'.'+pullDownFlipClass+' .'+pullDownIconClass+' {'+
+                                  '     -webkit-transform:rotate(-180deg) translateZ(0);'+
+                                  '}'+                                                  
+                                  '#'+pullDownContainer+'.'+pullDownLoadingClass+' .'+pullDownIconClass+' {'+
+                                  '     background-position:0 100%;'+
+                                  '     -webkit-transform:rotate(0deg) translateZ(0);'+
+                                  '     -webkit-transition-duration:0ms;'+                     
+                                  '     -webkit-animation-name:'+pullDownLoadingClass+';'+
+                                  '     -webkit-animation-duration:2s;'+
+                                  '     -webkit-animation-iteration-count:infinite;'+
+                                  '     -webkit-animation-timing-function:linear;'+
+                                  '}'+                             
+                                  '@-webkit-keyframes '+pullDownLoadingClass+' {'+
+                                  '     from { -webkit-transform:rotate(0deg) translateZ(0); }'+
+                                  '     to { -webkit-transform:rotate(360deg) translateZ(0); }'+
+                                  '}';
+                        
+                        create('style',head,{
+                             type:'text/css',
+                             innerHTML: css
+                        });
+                        
+                        var html = '<div id="'+pullDownContainer+'">'+
+                                   '    <span class="'+pullDownIconClass+'"></span>'+
+                                   '    <span class="'+pullDownLabelClass+'">'+pullDownLabelText.pull+'</span>'+
+                                   '</div>';  
+                                   
+                        $innerEl.prepend(html);
+                        
+                        $pullDownElement = $('#'+pullDownContainer);
+                        $pullDownLabelClass = $pullDownElement.find('.'+pullDownLabelClass);
+                        
+                        pullDownOffset = $pullDownElement[0].offsetHeight; 
+                        
+                        var extraConfig = {
+                          "onRefresh" : function() { 
+                                $pullDownElement.css('visibility','visible');  
+                                $pullDownElement.removeAttr('class');
+                                $pullDownLabelClass.html(pullDownLabelText.pull);                                                                                                          
+                          },
+                          "onScrollMove" : function() {                            
+                                if (this.y > 5 && !$pullDownElement.hasClass(pullDownFlipClass)) {
+                                    $pullDownElement.addClass(pullDownFlipClass);
+                                    $pullDownLabelClass.html(pullDownLabelText.release);
+                                    this.minScrollY = 0;
+                                } else if (this.y < 5 && $pullDownElement.hasClass(pullDownFlipClass)) {
+                                     $pullDownElement.removeAttr('class');
+                                    $pullDownLabelClass.html(pullDownLabelText.pull);
+                                    this.minScrollY = -pullDownOffset;
+                                }
+                          },
+                          "onScrollEnd" : function() {                               
+                              if ($pullDownElement.hasClass(pullDownFlipClass)) {
+                                  $pullDownElement.removeAttr('class');                                  
+                                  //$pullDownElement.addClass(pullDownLoadingClass);
+                                  $pullDownLabelClass.html(pullDownLabelText.loading);
+                                  if (doat_config.pullToRefreshCB) {
+                                      doat_config.pullToRefreshCB();
+                                  } 
+                                  iscrollArr[id].refresh.call(iscrollArr[id]);
+                                  $pullDownElement.parent().css('-webkit-transform','translate3d(0px, -'+pullDownOffset+'px, 0px) scale(1)');
+                                  //callback
+                                  // myScroll.refresh();
+                              }
+                          },
+                          "topOffset" : pullDownOffset,
+                          "useTransition": true,
+                          "useTransform": true         
+                        };
+                          
+                        for (k in extraConfig) config[k] = extraConfig[k];                         
+                    }                    
                     
                     iscrollArr[id] = new iScroll(id, config);
-                    //iscrollArr[id] = {refresh:function(){}, scrollTo: function(){}};   
+                    //iscrollArr[id] = {refresh:function(){}, scrollTo: function(){}};
                     
                     $el.bind('touchstart', {'id': id}, function(e){
                         var id = e.data.id;
@@ -135,12 +236,14 @@ function Doat_Scroll(){
         cfg = _cfg;
         $container = $(document.body);
         
-        MainObj = typeof mainObj != "undefined" && mainObj || window.TouchyJS;
-        classnamePrefix = 'touchyjs-';
+        MainObj = window.Doat || window.TouchyJS;
+        classnamePrefix = window.Doat ? 'doml_' : 'touchyjs-';
         contentClassName = classnamePrefix+'content';
         headerClassName = classnamePrefix+'header';
         contentInnerClassName = classnamePrefix+'scrollable';
-        $contents = $container.children('.'+contentClassName);        
+        $contents = $container.children('.'+contentClassName);
+        
+        MainObj.Env.addEventListener("orientationChange", calculate);
         
         if ($contents.length > 0){
             calculate($contents);
@@ -180,7 +283,6 @@ function Doat_Scroll(){
         $contents.css({
             'width': '100%',
             'position': 'absolute',
-            'height': contentHeight+'px',
             'top': headerHeight+'px'
         });
         

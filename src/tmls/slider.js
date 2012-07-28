@@ -42,14 +42,14 @@ var Doat_Slider = function(){
 			return false;
 		}		
 		
-		if (typeof mainObj !== 'undefined'){
-			isTouch = mainObj.Env.isMobile();
+		if (typeof Doat !== 'undefined'){
+			isTouch = Doat.Env.isMobile();
 			
-			var b = mainObj.Env.getInfo().browser;
+			var b = Doat.Env.getInfo().browser;
     		CSS_PREFIX = b === 'webkit' ? '-webkit-' : b === 'mozilla' ? '-moz-' : '';
 		}
 		else{
-			isTouch = ('ontouchstart' in window);
+			isTouch = true;
 		}
 		trackWidth = cfg.trackWidth;
     	
@@ -59,7 +59,7 @@ var Doat_Slider = function(){
 		TOUCHMOVE = isTouch ? 'touchmove' : 'mousemove';
 		TOUCHEND = isTouch ? 'touchend' : 'mouseup';
 		
-		$el = $('<div class="tml-slider" />');
+		$el = $('<div class="doml-slider" />');
 		$originalEl.parent().append($el);
 		$el.append($originalEl);
 		

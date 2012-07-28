@@ -25,33 +25,51 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of DoAT.
  */
-
 /**
 * Providing the ability to embed DOML tags inside the document HTML, parse and replace with predefined code.
 * @class
 */
 function Doat_DOML(){
-    var imageTemplate = 'http://doatresizer.appspot.com/?url={src}&width={width}&height={height}&cache=short&crop={crop}', 
+    var imageTemplate = 'http://doatresizer.appspot.com/?url={src}&width={width}&height={height}&cache=short&crop={crop}&default={default}', 
     templates = {
-        'searchbar':{type: 'replace', html:
-                        '<div><form '+
-                            'id="tml-searchbar-form" '+
-                            'onsubmit="{onsubmit}();TouchyJS.Searchbar.onSubmit();return false;" '+
-                            '>'+
+        'searchbar':{
+        			type: 'replace',
+        			html: '<form '+
+                            'id="doml-searchbar-form" '+
+                            'onsubmit="Doat.Searchbar.submitFunc({onsubmit}); return false;" '+
+                            '>'+                            
                                 '<input type="text" '+
-                                'value="{defaulttext}" '+
-                                'onfocus="TouchyJS.Searchbar.clearValue(\'{defaulttext}\')" '+
-                                'onblur="TouchyJS.Searchbar.fillValue(\'{defaulttext}\')" '+
-                                'id="tml-searchbar-searchfield" '+
+                                'data-defaulttext="{defaulttext}" '+
+                                'onfocus="Doat.Searchbar.clearValue(\'{defaulttext}\')" '+
+                                'onblur="Doat.Searchbar.fillValue(\'{defaulttext}\')" '+
+                                'id="doml-searchbar-searchfield" '+
+                                'name="searchfield" '+
+                                'style="{style}" '+
+                                'data-clearbutton={clearbutton}' +
+                                '/>'+
+                        '</form>'
+                    },                           
+        'searcharea':{
+        			type: 'replace',
+        			html: '<form '+
+                            'id="doml-searchbar-form" '+
+                            'onsubmit="Doat.Searchbar.submitFunc({onsubmit}); return false;" '+
+                            '>'+                            
+                                '<textarea '+                                
+                                'onfocus="Doat.Searchbar.clearValue(\'{defaulttext}\')" '+
+                                'onblur="Doat.Searchbar.fillValue(\'{defaulttext}\')" '+
+                                'id="doml-searchbar-searchfield" '+
                                 'name="searchfield" '+
                                 'style="{style}" '+
                                 'clearbutton={clearbutton}' +
-                                '/>'+
-                        '</form></div>'},
-        'navigate': {type: 'replace', html: '<a href="javascript://" class="{class}" onclick="TouchyJS.Nav.goTo(\'{to}\')"><span>{label}</span></a>'},
+                                '>{defaulttext}'+
+                                '</textarea>'+
+                        '</form>'
+                    },                    
+        'navigate': {type: 'replace', html: '<a href="javascript://" class="{class}" onclick="Doat.Navigation.goTo(\'{to}\')"><span>{label}</span></a>'},
         'image': {type: 'image', html: '<img src="'+imageTemplate+'" alt="{alt}" />'}
     },
-    prefix = 'tml',
+    prefix = 'doml',
     keyDefaultValues = {
         'autoinit': 'false'
     };

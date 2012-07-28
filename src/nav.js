@@ -31,19 +31,23 @@
 * @class
 */
 var Doat_Navigation = function(){
-    var classnamePrefix = 'touchyjs-',
+    var mainObj = Doat,
+        classnamePrefix = 'doml_',
         isMobile = mainObj.Env.isMobile(),
         $currentElement,
         $previousElement,
         currentElementHeight,
         cfg = {},
         cbArr = {},
-        addressCbArr = {},
         CSS_PREFIX,
         ADDRESS_FIRST = true,
         isNavigating = false,
         firstPageId,
-        globalOptions;
+        globalOptions,
+        hashArr = [],
+        isCurrentFirstInHistory = false,
+        currentHistoryState,
+        historyEnabled;
 
     var b = mainObj.Env.getInfo().browser.name || mainObj.Env.getInfo().browser;
     CSS_PREFIX = b === 'webkit' ? '-webkit-' : b === 'mozilla' ? '-moz-' : '';
@@ -51,9 +55,8 @@ var Doat_Navigation = function(){
     var init = function(_cfg){
         _cfg && (cfg = aug(cfg, _cfg));
         
-        if (cfg.browserHistory) {
-            initAddress();
-        }
+        var firstPage = document.querySelector(".doml_content");
+        firstPageId = cfg.firstPageId || firstPage && firstPage.id; 
     };
     
     /**
@@ -77,12 +80,12 @@ var Doat_Navigation = function(){
      * Supports "onComplete" property with a value of . <br />
      */
     var attachCallback = function(){
-    	var a = arguments;
+        var a = arguments;
 
         var pageId = (typeof a[0] === 'string') ? a[0] : a[0].get ? a[0].get(0).getAttribute('id') : a[0].getAttribute('id'),
-        	direction = a[1], // 'in'/'out'
-        	timing = (typeof a[2] === 'string') ? a[2].toLowerCase() : 'oncomplete', // 'onstart'/'oncomplete'
-        	cb = (typeof a[2] === 'string') ? a[3] : a[2];
+            direction = a[1], // 'in'/'out'
+            timing = (typeof a[2] === 'string') ? a[2].toLowerCase() : 'oncomplete', // 'onstart'/'oncomplete'
+            cb = (typeof a[2] === 'string') ? a[3] : a[2];
 
         cbArr[pageId] = cbArr[pageId] || {};
         cbArr[pageId][timing] = cbArr[pageId][timing] || {};
@@ -90,6 +93,7 @@ var Doat_Navigation = function(){
     };
 
     var navigate = function(toPage, options, bNoCallback){
+        !options && (options = getCurrentHistoryState().urlParams);
         if (!toPage || isNavigating){return false;}
         isNavigating = true;
         
@@ -104,7 +108,7 @@ var Doat_Navigation = function(){
             return false;
         }
         else if (options && options['transition'] == 'none'){
-        	var nextElCss = {
+            var nextElCss = {
                 'left': '0%',
                 'display': 'block'
             };
@@ -112,10 +116,17 @@ var Doat_Navigation = function(){
             nextElCss[CSS_PREFIX+'transform'] =  'translateX(0)';
             $nextElement.css(nextElCss);
 
-            $currentElement.css({
-                /*'left': '100%'*/
+            var currElCss = {
                 'display': 'none'
-            });
+            };
+            
+            if ('outElementStyle' in  options) {
+                for (var k in options['outElementStyle']) {
+                    currElCss[k] = options['outElementStyle'][k];
+                }
+            }
+                        
+            $currentElement.css(currElCss);
 
             onComplete($nextElement, options);
         }
@@ -184,80 +195,144 @@ var Doat_Navigation = function(){
             }
             if (mainObj.Messenger) {mainObj.Messenger.trigger(mainObj.Events.USER_ACTION, props)};
         }
+        
+        Doat.Viewport.hideAddressBar();
 
         return true;
     };
 
     var back = function(){
-        if (cfg.browserHistory){
-            history.back();
+        if (historyEnabled){
+            var isFirstPage = getCurrentHistoryState().firstPage;
+            if (isFirstPage) {
+                goTo(firstPageId, {"direction": "ltr"});
+            } else {
+                history.back();
+            }
         }
         else{
-            goTo($previousElement, {'muteEventReport': true});  
+            goTo($previousElement, {'muteEventReport': true});
         }
+        Doat.Viewport.hideAddressBar();
     };
 
     var goTo = function(toPage, options, bNoCallback){
-        if (cfg.browserHistory) {
-            var $nextElement = (toPage.constructor === String) ? $('.'+classnamePrefix+'content#'+toPage) : $(toPage);
+        !options && (options = {});
+        if (historyEnabled) {
+            toPage.constructor !== String && ( toPage = $(toPage)[0].id);
+
+            var qs = getCurrentHistoryState().urlParams;
             
-            var urlValue = "";
-            if (options) {
-                if (options.url) {
-                    urlValue = "/" + options.url;
-                } else if (options.id) {
-                    urlValue = "/" + options.id;
+            if (options.url){
+                for (var k in options.url) {
+                    qs[k] = options.url[k];
+                }
+                delete options.url;
+            }
+            
+            qs["topage"] = toPage;
+            
+            if (objectEqual(qs, encodedParseQuery())){
+                return false;
+            }
+            
+            var params = [];
+            for (var k in qs){
+                // Don't include topage in the url if it's the default page
+                if (!(k === "topage" && qs[k] === firstPageId)) {
+                    params.push(k+"="+(qs[k] || ""));    
                 }
             }
-            globalOptions = options;
-            hasher.setHash($nextElement[0].id + urlValue);
+            
+            var url = "?"+params.join("&");
+            
+            aug(options, {"firstPage": false, "urlParams": qs});
+            window.history.pushState(options, null, url);
         }
-        else{
-            navigate.apply(this, arguments);
+        navigate.apply(this, arguments);
+    };
+    
+    var next = function(options, bNoCallback) {
+        var $nextEl = $currentElement.next();
+        if ($nextEl && $nextEl.hasClass("doml_content")) {
+            goTo($nextEl, options, bNoCallback);
+        }
+    };
+    
+    var previous = function(options, bNoCallback) {
+        var $prevEl = $currentElement.prev();
+        if ($prevEl && $prevEl.hasClass("doml_content")) {
+            goTo($prevEl, options, bNoCallback);
         }
     };
 
     var onStart = function($nextElement, options){
         var currId = $currentElement[0].id,
             nextId = $nextElement[0].id;
+            
+        aug(options, {
+            "currentElement": $currentElement[0],
+            "nextElement": $nextElement[0]
+        });
+
+        execCallback(options, ['*', 'onstart', 'in']);
+        execCallback(options, [nextId, 'onstart', 'in']);
         
         if (currId != nextId) {
-            if (cbArr[nextId] && cbArr[nextId]['onstart'] && cbArr[nextId]['onstart']['in']){
-                cbArr[nextId]['onstart']['in']($currentElement[0], $nextElement[0]);
-            }
-            if (cbArr[currId] && cbArr[currId]['onstart'] && cbArr[currId]['onstart']['out']){
-                cbArr[currId]['onstart']['out']($currentElement[0], $nextElement[0]);
-            }
+            execCallback(options, [currId, 'onstart', 'out']);
         }
         
-        if (options && options.onStart){
-            options.onStart($currentElement[0], $nextElement[0]);
-        }
+        execCallback(options, options, ['onStart']);
     };
+    
     var onComplete = function($nextElement, options){
         var currId = $currentElement[0].id,
             nextId = $nextElement[0].id;
             
         $previousElement = $currentElement;
         $currentElement = $nextElement;
+        
+        aug(options, {
+            "currentElement": $currentElement[0],
+            "nextElement": $previousElement[0]
+        });
+        
+        execCallback(options, ['*', 'oncomplete', 'in']);
+        execCallback(options, [nextId, 'oncomplete', 'in']);
             
         if (currId != nextId) {
-            $previousElement.css('display', 'none');
-            
-            if (cbArr[nextId] && cbArr[nextId]['oncomplete'] && cbArr[nextId]['oncomplete']['in']){
-                cbArr[nextId]['oncomplete']['in']($currentElement[0], $previousElement[0]);
-            }
-            if (cbArr[currId] && cbArr[currId]['oncomplete'] && cbArr[currId]['oncomplete']['out']){
-                cbArr[currId]['oncomplete']['out']($currentElement[0], $previousElement[0]);
-            }
+            $previousElement.css('display', 'none');            
+            execCallback(options, [currId, 'oncomplete', 'out']);
         }
         
-        if (options && options.onComplete){
-            options.onComplete($currentElement[0], $previousElement[0]);
-        }
+        execCallback(options, options, ['onComplete']);
         
         isNavigating = false;
     };
+    
+    var execCallback = function(data, obj, keys){
+        var flag = true;
+        
+        // if no obj was sent then make cbArr is the default
+        if (!keys) {
+            keys = obj;
+            obj = cbArr;
+        }
+        
+        if (!obj) { return false; }
+        
+        // check if the keys exist in the obj (obj[key1][key2][key3]...)
+        for (var i=0,len=keys.length; i<len; i++){
+            obj = obj[keys[i]];
+            if (!obj) {
+                flag = false;
+                break;
+            }
+        }
+        
+        // execute callback
+        flag && obj(data);
+    }
 
     /**
      * @method determineDirection
@@ -307,7 +382,7 @@ var Doat_Navigation = function(){
     var getCurrent = function(){
         return $currentElement[0];
     };
-
+    
     var hasNewContentHeight = function(){
         if ($currentElement &&
             currentElementHeight !== $currentElement[0].offsetHeight){
@@ -318,68 +393,91 @@ var Doat_Navigation = function(){
         return false;
     };
 
-    var changed = function(_page, _cb) {
-        if (typeof _page == "function") {
-            _cb = _page;
-            _page = ["__default"];
-        } else if (typeof _page == "string") {
-            if (_page == "") {
-                _page = "__empty";
+    /*
+     * Callback triggered on window.popstate
+     */
+    var onAddressChanged = function(data) {
+        if (data && data.state) {
+            var state = setCurrentHistoryState(data);
+            var page = state.urlParams.topage || firstPageId;
+    
+            navigate(page, state);    
+        }
+    };
+    
+    /*
+     * Callback triggered for first browser history page
+     */
+    var onFirstPage = function() {
+        var parsedQuery = encodedParseQuery(),
+            page = parsedQuery["topage"] || firstPageId,
+            options = { "transition": "none", "outElementStyle": {} };
+            
+         if (Doat.Env.isMobile()) {
+            options["outElementStyle"][CSS_PREFIX+"transform"] = "translateX(-100%)" ;
+        } else {
+            options["outElementStyle"]["left"] = "-100%";
+        }
+            
+        var state = getCurrentHistoryState();
+        if (!state || state.firstPage === undefined) {
+            state = {
+                "firstPage": true,
+                "urlParams": parsedQuery    
+            };
+            setCurrentHistoryState({
+                "state": state
+            });
+            
+            window.history.replaceState(state, null);
+        }
+        aug(options, {"firstPage": true, "urlParams": parsedQuery});
+        navigate(page, options);
+    };
+
+    /*
+     * Initiates the browser history logic
+     */
+    var initHistory = function() {
+        historyEnabled = true;
+        window.addEventListener("popstate", onAddressChanged, false);
+        onFirstPage();
+    };
+    
+    /*
+     * returns url decoded parsed querystring
+     */
+    var encodedParseQuery = function(){
+        var p = parseQuery();
+        for (var k in p) {
+            p[k] = decodeURIComponent(p[k]);
+        }
+        return p;
+    };
+    
+    var getCurrentHistoryState = function(){
+        var state = {};
+        if (currentHistoryState){
+            for (var k in currentHistoryState) {
+                state[k] = currentHistoryState[k];
             }
-            _page = [_page];
         }
-
-        for (var i=0; i<_page.length; i++) {
-            var page = _page[i];
-            if (!addressCbArr[page]) addressCbArr[page] = [];
-            addressCbArr[page].push(_cb);
-        }
+        return state;
     };
-
-    var addressChanged = function(newHash) {  
-        var paths = newHash.split('/'),
-            page = "__empty";
-        
-        if (paths.length > 0 && paths[0] != "") {
-            page = paths[0];
-        }
-
-        paths.splice(0, 1);
-        
-        if (!addressCbArr[page]) addressCbArr[page] = [];
-        if (!addressCbArr["__default"]) addressCbArr["__default"] = [];
-        
-        var cbs = addressCbArr[page].concat(addressCbArr["__default"]);
-        if (page == "__empty") page = firstPageId;        
-        
-        if (ADDRESS_FIRST) {
-            navigate(page, {
-                "transition": "none"
-            }, true);
-            ADDRESS_FIRST = false;
-        }
-        else{
-            navigate(page, globalOptions, true);
-        }
-
-        for (var i=0; i<cbs.length; i++) {
-            cbs[i](page, paths);
-        }
+    
+    var setCurrentHistoryState = function(data){
+        return currentHistoryState = data && data.state;
     };
-
-    var initAddress = function() {        
-        hasher.changed.add(addressChanged);
-        hasher.initialized.add(addressChanged);
-        hasher.init();
-    }   
 
     return {
         'init': init,
+        'initHistory': initHistory,
         'goTo': goTo,
+        'next': next,
+        'previous': previous,
         'back': back,
         'attachCallback': attachCallback,
-        'initAddress': initAddress,
-        'changed': changed,
+        'bind': attachCallback,
         'setCurrent': setCurrent,
         'getCurrent': getCurrent,
         'hasNewContentHeight': hasNewContentHeight,
@@ -417,7 +515,7 @@ function Doat_Progress_Indicator(){
     };
     
     var initMainSpinner = function(){
-        $mainEl = $('<span class="touchyjs-progress-indicator" />');
+        $mainEl = $('<span class="doml-progress-indicator" />');
         $mainEl.css(default_css);
         $(document.body).append($mainEl);
         

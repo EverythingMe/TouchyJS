@@ -25,36 +25,41 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of DoAT.
  */
-
 (function(){
     var callback, lastPosition,
         generatedCallback = 'doat_onLocationRetrieved_'+new Date().getTime(),
-        Log = window.TouchyJS && TouchyJS.Log;
+        Log = (typeof Doat != 'undefined' && Doat && Doat.Log) || new Logger();
 
     Doat_Env.prototype.getLocation = function(_callback, cfg){
         callback = _callback;
-
+        
         if (!cfg || !cfg.testProps){
             if (cfg && cfg.request){
-                Log && Log.info('Specific params requested for location', cfg.request);
-                var qs = parseQuery(), data = {}, flag = true,
+                Log.info('Specific params requested for location', cfg.request);
+                var qs = parseQuery(), data = {}, notFoundFlag = false, foundFlag = false, 
                     arr = (cfg.request.constructor === String) ? [cfg.request] : cfg.request;
-
+                
                 for (var i=0; i<arr.length; i++){
                     var key = 'do_loc_'+arr[i];
                     if (qs[key]){
                         data[arr[i]] = decodeURIComponent(qs[key]);
-                        Log && Log.info('found '+key);
+                        
+                        Log.info('found '+key);
+                        foundFlag = true;
                     }
                     else{
-                        flag = false;
-                        Log && Log.info('could not find '+arr[i]+' in querystring');
-                        break;
+                        Log.info('could not find '+arr[i]+' in querystring');
+                        notFoundFlag = true;
+                        if (!cfg.allowOneFound) { break; }
                     }
                 }
-                if (flag){
+                if (!notFoundFlag || (cfg.allowOneFound && foundFlag)){
+                    Log.info('found required location data in querystring');
                     callback(normalize(data));
                     return true;
+                }
+                else{
+                    Log.info('Couldnt find required location data in querystring');
                 }
             }
             if (this.isMobile()){
@@ -76,7 +81,8 @@
     };
 
     window[generatedCallback] = function(data){
-        callback(normalize(data));
+        data = normalize(data);
+        callback(data);
     };
 
     function getByCoords(position){
@@ -106,16 +112,19 @@
         var json = {};
         
         if (data){
+            if (data.latitude && data.longitude){
+                data.lat = data.latitude;
+                data.lon = data.longitude;
+            }
             if (data.lat && data.lon){
-                data.position = {
+                json.position = {
                     'coords': {
                         'latitude': data.lat,
                         'longitude': data.lon
                     }
                 }
-                delete data.lat;
-                delete data.lon;
             }
+            
             if (data.query){ // hence YQL object
                 if (data.query.results && data.query.results.place){
                     var p = data.query.results.place;
@@ -133,7 +142,7 @@
             }
         }
         
-        if (lastPosition){
+        if (!json.position && lastPosition){
             json['position'] = lastPosition;
             lastPosition = undefined;
         }

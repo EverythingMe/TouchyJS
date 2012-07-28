@@ -26,10 +26,6 @@
  * or implied, of DoAT.
  */
 
-/**
-* @description Enables attachment of callback functions to Doat events
-* @class
-*/
 var Doat_Events = function(){
     var self = this,
         eventArr = {};
@@ -72,7 +68,15 @@ var Doat_Events = function(){
     };
 
     var call = function(cb){
-        cb();
+        //try{
+            cb();
+        //}
+        /*catch(e){
+            var log = Log || Doat.Log || (Logger) ? new Logger : null;
+            if (log){
+                log.error(e);
+            }
+        }*/
     };
 
     // shortcuts

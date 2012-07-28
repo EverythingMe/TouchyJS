@@ -25,7 +25,6 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of DoAT.
  */
-
 function create(tagName, parent, props, callback, adjacentNode) {
     var doc = parent ? parent.ownerDocument : document;
     var o = doc.createElement(tagName);
@@ -64,8 +63,8 @@ function create(tagName, parent, props, callback, adjacentNode) {
 }
 
 function parseQuery() {
-    var r = {};
-   (location.search || '').replace(/(?:[?&]|^)([^=]+)=([^&]*)/g, function(ig, k, v) {r[k] = v;});
+   var r = {};
+   (location.search || '').replace(/([^=^&^?]+)=([^&]*)/g, function(ig, k, v) {r[k] = v;});
    return r;
 }
 
@@ -115,6 +114,48 @@ function trim(str){
     }
 }
 
+var Logger = function(){
+    function getLoggerLevel(){
+    	if (/http:\/\/.+\.(loc)\.flyapps\.me\//.test(location.href) || /http:\/\/loc\.flyapps\.me\//.test(location.href) || /http:\/\/.+test\.flyapps\.me\//.test(location.href)){
+            return Log.DEBUG;
+        }
+        else if (/http:\/\/.+\.(stg|test)\.flyapps\.me\//.test(location.href)){
+            return Log.INFO;
+        }
+        else if (/http:\/\/.+\.flyapps\.me\//.test(location.href)){
+            return Log.ERROR;
+        }
+        return Log.DEBUG;
+    }
+
+    function getLoggerOutput(){
+        var loggerOutput = parseQuery()['doatloggeroutput'];
+        if (loggerOutput){
+            switch (loggerOutput){
+                case 'console':
+                    return Log.consoleLogger;
+                    break;
+                case 'inline':
+                    return Log.writeLogger;
+                    break;
+                case 'alert':
+                    return Log.alertLogger;
+                    break;
+                case 'popup':
+                    return Log.popupLogger;
+                    break;
+                default:
+                    if (window[loggerOutput]){
+                        return window[loggerOutput]
+                    }
+            }
+        }
+        return Log.consoleLogger;
+    }
+
+    return new Log(getLoggerLevel(), getLoggerOutput());
+};
+
 function addListener(){
     if (typeof arguments[0] === 'string'){
         arguments[2] = arguments[1];
@@ -149,4 +190,37 @@ function removeListener(){
     else if (el.detachEvent){
       el.detachEvent('on'+type, cb);
     }
+}
+
+var objectEqual = function(x, y)
+{
+  var p;
+  for(p in y) {
+      if(typeof(x[p])=='undefined') {return false;}
+  }
+
+  for(p in y) {
+      if (y[p]) {
+          switch(typeof(y[p])) {
+              case 'object':
+                  if (!y[p].equals(x[p])) { return false; } break;
+              case 'function':
+                  if (typeof(x[p])=='undefined' ||
+                      (p != 'equals' && y[p].toString() != x[p].toString()))
+                      return false;
+                  break;
+              default:
+                  if (y[p] != x[p]) { return false; }
+          }
+      } else {
+          if (x[p])
+              return false;
+      }
+  }
+
+  for(p in x) {
+      if(typeof(y[p])=='undefined') {return false;}
+  }
+
+  return true;
 }
