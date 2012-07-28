@@ -36,7 +36,7 @@ var Doat_Searchbar = function(cfg){
         inputEl, clearButton, $body, formEl,
         keyboardVisibleCallbacks = [],
         keyboardHiddenCallbacks = [],
-        KEYBOARD_CLASSNAME = "doml-searchbar-keyboard-visible",
+        KEYBOARD_CLASSNAME = "tml-searchbar-keyboard-visible",
         defaultText,
         DEFAULT_TEXT_CLASSNAME = "default";
 
@@ -53,11 +53,11 @@ var Doat_Searchbar = function(cfg){
     Doat.Events.ready(init);
     
     function init(){
-        inputEl = document.getElementById('doml-searchbar-searchfield');
+        inputEl = document.getElementById('tml-searchbar-searchfield');
         if (inputEl){
             $body = $(document.body);
             
-            formEl = document.getElementById('doml-searchbar-form');
+            formEl = document.getElementById('tml-searchbar-form');
             _this.submit = formEl.onsubmit;
              
             defaultText = inputEl.getAttribute("data-defaulttext");
@@ -243,7 +243,7 @@ function ClearButton(){
         css['left'] = css.left+css.leftOffset+'px';
         
         $el = $('<span/>');
-        $el.addClass('doml-searchbar-clear')
+        $el.addClass('tml-searchbar-clear')
            .html('X')
            .css(css)
            .click(function(e){

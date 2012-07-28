@@ -972,14 +972,14 @@ function Doat_DOML(){
         'searchbar':{
         			type: 'replace',
         			html: '<form '+
-                            'id="doml-searchbar-form" '+
-                            'onsubmit="Doat.Searchbar.submitFunc({onsubmit}); return false;" '+
+                            'id="tml-searchbar-form" '+
+                            'onsubmit="TouchyJS.Searchbar.submitFunc({onsubmit}); return false;" '+
                             '>'+                            
                                 '<input type="text" '+
                                 'data-defaulttext="{defaulttext}" '+
-                                'onfocus="Doat.Searchbar.clearValue(\'{defaulttext}\')" '+
-                                'onblur="Doat.Searchbar.fillValue(\'{defaulttext}\')" '+
-                                'id="doml-searchbar-searchfield" '+
+                                'onfocus="TouchyJS.Searchbar.clearValue(\'{defaulttext}\')" '+
+                                'onblur="TouchyJS.Searchbar.fillValue(\'{defaulttext}\')" '+
+                                'id="tml-searchbar-searchfield" '+
                                 'name="searchfield" '+
                                 'style="{style}" '+
                                 'data-clearbutton={clearbutton}' +
@@ -989,13 +989,13 @@ function Doat_DOML(){
         'searcharea':{
         			type: 'replace',
         			html: '<form '+
-                            'id="doml-searchbar-form" '+
-                            'onsubmit="Doat.Searchbar.submitFunc({onsubmit}); return false;" '+
+                            'id="tml-searchbar-form" '+
+                            'onsubmit="TouchyJS.Searchbar.submitFunc({onsubmit}); return false;" '+
                             '>'+                            
                                 '<textarea '+                                
-                                'onfocus="Doat.Searchbar.clearValue(\'{defaulttext}\')" '+
-                                'onblur="Doat.Searchbar.fillValue(\'{defaulttext}\')" '+
-                                'id="doml-searchbar-searchfield" '+
+                                'onfocus="TouchyJS.Searchbar.clearValue(\'{defaulttext}\')" '+
+                                'onblur="TouchyJS.Searchbar.fillValue(\'{defaulttext}\')" '+
+                                'id="tml-searchbar-searchfield" '+
                                 'name="searchfield" '+
                                 'style="{style}" '+
                                 'clearbutton={clearbutton}' +
@@ -1003,10 +1003,10 @@ function Doat_DOML(){
                                 '</textarea>'+
                         '</form>'
                     },                    
-        'navigate': {type: 'replace', html: '<a href="javascript://" class="{class}" onclick="Doat.Navigation.goTo(\'{to}\')"><span>{label}</span></a>'},
+        'navigate': {type: 'replace', html: '<a href="javascript://" class="{class}" onclick="TouchyJS.Navigation.goTo(\'{to}\')"><span>{label}</span></a>'},
         'image': {type: 'image', html: '<img src="'+imageTemplate+'" alt="{alt}" />'}
     },
-    prefix = 'doml',
+    prefix = 'tml',
     keyDefaultValues = {
         'autoinit': 'false'
     };
@@ -2722,7 +2722,7 @@ var Doat_Searchbar = function(cfg){
         inputEl, clearButton, $body, formEl,
         keyboardVisibleCallbacks = [],
         keyboardHiddenCallbacks = [],
-        KEYBOARD_CLASSNAME = "doml-searchbar-keyboard-visible",
+        KEYBOARD_CLASSNAME = "tml-searchbar-keyboard-visible",
         defaultText,
         DEFAULT_TEXT_CLASSNAME = "default";
 
@@ -2739,11 +2739,11 @@ var Doat_Searchbar = function(cfg){
     Doat.Events.ready(init);
     
     function init(){
-        inputEl = document.getElementById('doml-searchbar-searchfield');
+        inputEl = document.getElementById('tml-searchbar-searchfield');
         if (inputEl){
             $body = $(document.body);
             
-            formEl = document.getElementById('doml-searchbar-form');
+            formEl = document.getElementById('tml-searchbar-form');
             _this.submit = formEl.onsubmit;
              
             defaultText = inputEl.getAttribute("data-defaulttext");
@@ -2929,7 +2929,7 @@ function ClearButton(){
         css['left'] = css.left+css.leftOffset+'px';
         
         $el = $('<span/>');
-        $el.addClass('doml-searchbar-clear')
+        $el.addClass('tml-searchbar-clear')
            .html('X')
            .css(css)
            .click(function(e){
