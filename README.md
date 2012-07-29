@@ -1,7 +1,7 @@
 # Touchy™JS - mobile webapp developement made easy
 
 Out of the box, your app gets fullscreen size, animated navigation and browser history, smart searchbar, environment info and much more.
-Touchy™JS is built as a toolkit, not a framework. This means you can use it within your existing project without refactoring (apart from the Nav module).
+Touchy™JS is built as a toolkit so you can use it within your existing webapp without refactoring (apart from the Nav module).
 
 ### Touchy™JS Modules
 
