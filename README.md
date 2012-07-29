@@ -27,11 +27,11 @@ Prepare the page DOM
     header
   </div>
   
-  <div class="tml_content">
+  <div class="tml_content" id="page1">
     first page
   </div>
   
-  <div class="tml_content">
+  <div class="tml_content" id="page2">
     second page
   </div>
   
@@ -45,10 +45,30 @@ Include required scripts near end of page
 <script src="touchy.min.js"></script>
 ~~~
 
-That's it! You're ready to go!
+That's it! You're ready to go! Here's a demo page.
+
+Now, let's try page navigation. Insert some buttons into the pages that use `TouchyJS.Nav`.
+
+~~~ html
+<div class="tml_content" id="page1">
+  first page
+  <br />
+  <button onclick="TouchyJS.Nav.goTo('page2')">Go to second page</button>
+</div>
+
+<div class="tml_content" id="page2">
+  second page
+  <br />
+  <button onclick="TouchyJS.Nav.back()">Go to second page</button>
+</div>
+~~~
+
+Here's a demo page
 
 Let's take it further though.
-Insert a searchbar TML component
+Insert a searchbar TML component:
+
+HTML
 
 ~~~ html
 <div class="tml_header">
@@ -56,12 +76,16 @@ Insert a searchbar TML component
 </div>
 ~~~
 
+JavaScript
+
 ~~~ javascript
 function showSearchTerm() {
   var term = TouchyJS.Searchbar.getValue();
   alert(term);
 }
 ~~~
+
+Here's a demo page
 
 ### Target platforms
 
