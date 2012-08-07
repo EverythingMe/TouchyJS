@@ -32,7 +32,7 @@
 */
 var Doat_Navigation = function(){
     var mainObj = Doat,
-        classnamePrefix = 'doml_',
+        classnamePrefix = 'tml_',
         isMobile = mainObj.Env.isMobile(),
         $currentElement,
         $previousElement,
@@ -55,7 +55,7 @@ var Doat_Navigation = function(){
     var init = function(_cfg){
         _cfg && (cfg = aug(cfg, _cfg));
         
-        var firstPage = document.querySelector(".doml_content");
+        var firstPage = document.querySelector(".tml_content");
         firstPageId = cfg.firstPageId || firstPage && firstPage.id; 
     };
     
@@ -254,14 +254,14 @@ var Doat_Navigation = function(){
     
     var next = function(options, bNoCallback) {
         var $nextEl = $currentElement.next();
-        if ($nextEl && $nextEl.hasClass("doml_content")) {
+        if ($nextEl && $nextEl.hasClass("tml_content")) {
             goTo($nextEl, options, bNoCallback);
         }
     };
     
     var previous = function(options, bNoCallback) {
         var $prevEl = $currentElement.prev();
-        if ($prevEl && $prevEl.hasClass("doml_content")) {
+        if ($prevEl && $prevEl.hasClass("tml_content")) {
             goTo($prevEl, options, bNoCallback);
         }
     };
@@ -509,9 +509,20 @@ function Doat_Progress_Indicator(){
         var cfg = {};
         for (i in default_cfg) cfg[i] = default_cfg[i];
         for (i in customSpinnerCfg) cfg[i] = customSpinnerCfg[i];
-        
+
+        var parent = customSpinnerCfg.parent || $(document.body);
+
+        $mainEl = parent.find('.doml-progress-indicator');
+        if ($mainEl.length === 0) {
+            $mainEl = $('<span class="doml-progress-indicator" />');
+            $mainEl.css(default_css);
+            parent.append($mainEl);
+        }
+
+        mainEl = $mainEl[0];
+
         customSpinner = new Spinner(cfg);
-        customSpinner.spin(cfg.parent);
+        customSpinner.spin(mainEl);
     };
     
     var initMainSpinner = function(){
