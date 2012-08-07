@@ -236,8 +236,8 @@ function Doat_Scroll(){
         cfg = _cfg;
         $container = $(document.body);
         
-        MainObj = window.Doat || window.TouchyJS;
-        classnamePrefix = window.Doat ? 'doml_' : 'touchyjs-';
+        MainObj = window.TouchyJS;
+        classnamePrefix = 'tml_';
         contentClassName = classnamePrefix+'content';
         headerClassName = classnamePrefix+'header';
         contentInnerClassName = classnamePrefix+'scrollable';
