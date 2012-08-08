@@ -240,7 +240,8 @@ var Doat_Navigation = function(){
             for (var k in qs){
                 // Don't include topage in the url if it's the default page
                 if (!(k === "topage" && qs[k] === firstPageId)) {
-                    params.push(k+"="+(qs[k] || ""));    
+                    var val = (qs[k] !== undefined) ? qs[k] : "";
+                    params.push(k+"="+val);
                 }
             }
             
@@ -481,7 +482,8 @@ var Doat_Navigation = function(){
         'setCurrent': setCurrent,
         'getCurrent': getCurrent,
         'hasNewContentHeight': hasNewContentHeight,
-        'Indicator': new Doat_Progress_Indicator()
+        'Indicator': new Doat_Progress_Indicator(),
+        'getCurrentHistoryState': getCurrentHistoryState
     };
 };
 
@@ -512,7 +514,7 @@ function Doat_Progress_Indicator(){
 
         var parent = customSpinnerCfg.parent || $(document.body);
 
-        $mainEl = parent.find('.doml-progress-indicator');
+        $mainEl = parent.children('.doml-progress-indicator');
         if ($mainEl.length === 0) {
             $mainEl = $('<span class="doml-progress-indicator" />');
             $mainEl.css(default_css);
