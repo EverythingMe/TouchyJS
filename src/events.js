@@ -100,6 +100,10 @@ var Doat_Events = function(){
         self.addEventListener('visible', cb);
     };
 
+    this.translationReady = function(cb){
+        self.addEventListener('translationReady', cb);
+    };
+
     // CONSTS
     this.NO_RESULTS         = 'no results';
     this.RENDER_START       = 'render start';
@@ -138,5 +142,9 @@ var Doat_Events = function(){
     this.blurred(function(){
         eventArr['blurred'].enabled = true;
         eventArr['focused'].enabled = eventArr['visible'].enabled = eventArr['hidden'].enabled = false;
+    });
+
+    this.translationReady(function(){
+        eventArr['translationReady'].enabled = true;
     });
 };

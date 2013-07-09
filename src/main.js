@@ -170,6 +170,9 @@ function Doat_Main(){
             Messenger.trigger(Doat.Events.DOAT_READY);
         });
 
+        L10n = new L10n(cfg, self);
+        self.L10n = L10n;
+
         self.Events.focused(function(){
             self.focused = true;
         });
