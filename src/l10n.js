@@ -4,7 +4,7 @@ function L10n(cfg, TouchyJS) {
 
     function init() {
         langsHash   = {};
-        path        = cfg.l10n.folderPath || 'locales';
+        path        = cfg.l10n.folderPath  || 'locales';
         defaultLang = cfg.l10n.defaultLang || 'es-US'; 
         
         extendString();
