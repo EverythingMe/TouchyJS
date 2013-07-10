@@ -1,6 +1,10 @@
 function L10n(cfg, TouchyJS) { 
   
-    var path, currLang, langsMap, defaultLang;
+    var path,
+        currLang,
+        currLocale,
+        langsMap,
+        defaultLang;
 
     function init() {
         cfg = cfg || {};
@@ -8,15 +12,17 @@ function L10n(cfg, TouchyJS) {
         
         langsHash   = {};
         path        = cfg.l10n.folderPath  || 'locales';
-        defaultLang = cfg.l10n.defaultLang || 'es-US'; 
+        defaultLang = cfg.l10n.defaultLang || 'en'; 
         
         extendString();
-        setLang(getBrowserLang());
+        setLangLocale(getBrowserLang());
     }
 
     // this should be accessable for future outside events.
-    function setLang(lang) {
-        currLang = lang;        
+    function setLangLocale(lang) {
+        var lang_locale = lang.split('-');
+        currLang = lang_locale[0];
+        currLocale = lang_locale[1] || "";
         loadTranslationFile();
     }
 
