@@ -8,7 +8,8 @@ function L10n(cfg, TouchyJS) {
 
     function init() {
         cfg = cfg || {};
-        cfg.l10n = cfg.l10n || {};
+        
+        if (!cfg.l10n) return ;
         
         langsHash   = {};
         path        = cfg.l10n.folderPath  || 'locales';
